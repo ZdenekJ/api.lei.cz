@@ -1,29 +1,45 @@
-"use strict";
-require('dotenv').config();
-const Hapi = require('@hapi/hapi');
+require("dotenv").config(); // ALLOWS ENVIRONMENT VARIABLES TO BE SET ON PROCESS.ENV SHOULD BE AT TOP
 
-const server = Hapi.server({
-  port: 3000,
-  host: 'localhost'
+const express = require("express");
+const mysql = require("mysql");
+
+// DB connection
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "lei",
 });
 
-server.route({
-  method: 'GET',
-  path: '/',
-  handler: (req, h) => {
-    return 'Hello from HapiJS!';
+db.connect((err) => {
+  if (err) {
+    throw err;
   }
+  console.log("MySQL connected");
 });
 
-server.route({
-  method: 'GET',
-  path: '/{creation_id}',
-  handler: (req, h) => {
-    const creationUri = req.params.creation_id
-    return 'URI: ' + creationUri;
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Hi! ;)");
+});
+
+app.get("/:creation_uri", (req, res) => {
+  let sql;
+  if (req.params.creation_uri === "guestbook") {
+    sql = "SELECT * FROM guestbook WHERE creations_id = 0 ORDER BY date DESC";
+  } else {
+    sql = `SELECT guestbook.* FROM creations, guestbook WHERE creations.id = guestbook.creations_id AND creations.uri LIKE '${req.params.creation_uri}' ORDER BY date DESC`;
   }
+  // const sql = "SELECT * FROM creations";
+  db.query(sql, (err, results) => {
+    if (err) {
+      throw err;
+    }
+    res.json(results);
+  });
 });
+// Listen on pc port
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
 
-server.start();
-console.log('Server running on %s', server.info.uri);
-console.log(process.env.DB_HOST);
