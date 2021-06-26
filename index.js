@@ -11,8 +11,10 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-db.connect((err) => {
-  if (err) {
+db.connect((err) =>
+{
+  if(err)
+  {
     throw err;
   }
   console.log("MySQL connected");
@@ -20,20 +22,27 @@ db.connect((err) => {
 
 const app = express();
 
-app.get("/", (req, res) => {
+app.get("/", (req, res) =>
+{
   res.send("Hi! ;)");
 });
 
-app.get("/:creation_uri", (req, res) => {
-  let sql;
-  if (req.params.creation_uri === "guestbook") {
+app.get("/:creation_uri", (req, res) =>
+{
+  let sql, params;
+  if(req.params.creation_uri === "guestbook")
+  {
     sql = "SELECT * FROM guestbook WHERE creations_id = 0 ORDER BY date DESC";
-  } else {
-    sql = `SELECT guestbook.* FROM creations, guestbook WHERE creations.id = guestbook.creations_id AND creations.uri LIKE '${req.params.creation_uri}' ORDER BY date DESC`;
+  } else
+  {
+    sql = "SELECT guestbook.* FROM creations, guestbook WHERE creations.id = guestbook.creations_id AND creations.uri = ? ORDER BY date DESC";
+    params = [req.params.creation_uri];
   }
   // const sql = "SELECT * FROM creations";
-  db.query(sql, (err, results) => {
-    if (err) {
+  db.query(sql, params, (err, results) =>
+  {
+    if(err)
+    {
       throw err;
     }
     res.json(results);
