@@ -2,6 +2,7 @@ require("dotenv").config(); // ALLOWS ENVIRONMENT VARIABLES TO BE SET ON PROCESS
 
 const express = require("express");
 const mysql = require("mysql");
+const cors = require("cors");
 
 // DB connection
 const db = mysql.createConnection({
@@ -11,38 +12,32 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-db.connect((err) =>
-{
-  if(err)
-  {
+db.connect((err) => {
+  if (err) {
     throw err;
   }
   console.log("MySQL connected");
 });
 
 const app = express();
+app.use(cors());
 
-app.get("/", (req, res) =>
-{
+app.get("/", (req, res) => {
   res.send("Hi! ;)");
 });
 
-app.get("/:creation_uri", (req, res) =>
-{
+app.get("/:creation_uri", (req, res) => {
   let sql, params;
-  if(req.params.creation_uri === "guestbook")
-  {
+  if (req.params.creation_uri === "guestbook") {
     sql = "SELECT * FROM guestbook WHERE creations_id = 0 ORDER BY date DESC";
-  } else
-  {
-    sql = "SELECT guestbook.* FROM creations, guestbook WHERE creations.id = guestbook.creations_id AND creations.uri = ? ORDER BY date DESC";
+  } else {
+    sql =
+      "SELECT guestbook.* FROM creations, guestbook WHERE creations.id = guestbook.creations_id AND creations.uri = ? ORDER BY date DESC";
     params = [req.params.creation_uri];
   }
   // const sql = "SELECT * FROM creations";
-  db.query(sql, params, (err, results) =>
-  {
-    if(err)
-    {
+  db.query(sql, params, (err, results) => {
+    if (err) {
       throw err;
     }
     res.json(results);
@@ -51,4 +46,3 @@ app.get("/:creation_uri", (req, res) =>
 // Listen on pc port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
-
