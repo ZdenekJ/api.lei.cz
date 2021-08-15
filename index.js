@@ -36,7 +36,7 @@ app.get("/:creation_uri/:page?/:posts_per_page?", (req, res) => {
   postsPerPage =
     parseInt(req.params.posts_per_page, 10) ||
     parseInt(process.env.DEF_POST_PER_PAGE, 10);
-  postsPerPage = postsPerPage < maxPostPerPage ? postsPerPage : maxPostPerPage;
+  postsPerPage = postsPerPage <= maxPostPerPage ? postsPerPage : maxPostPerPage;
 
   sqlCount =
     "SELECT COUNT(*) as postsCount FROM creations, guestbook WHERE creations.id = guestbook.creations_id AND creations.uri = ?";
