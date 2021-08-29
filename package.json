@@ -1,14 +1,22 @@
 {
   "name": "api.lei.cz",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "API pro lei.cz",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "/srv/bin/primary_tech/node index.js"
   },
   "author": "Zdenek Jasek",
   "license": "MIT",
   "dependencies": {
-    "@hapi/hapi": "^20.1.2"
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
